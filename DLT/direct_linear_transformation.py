@@ -74,9 +74,9 @@ def DLT(pointSet1, pointSet2, norm_input, norm_output):
     """
     :param norm_output: norm factor for pointSet2
     :param norm_input: norm factor for pointSet1
-    :param pointSet1: original coordinates
-    :param pointSet2: transformed coordinates
-    :return:
+    :param pointSet1: original coordinates normalised
+    :param pointSet2: transformed coordinates normalised
+    :return: normalised and denormalised homographies
     """
     A = []
 
@@ -99,6 +99,36 @@ def DLT(pointSet1, pointSet2, norm_input, norm_output):
     return norm_H, denorm_H
 
 
+def DLTCV(pointSet1, pointSet2, pointSet1norm, pointSet2norm):
+    """
+    :param pointSet1norm: original coordinates normalised
+    :param pointSet2norm: transformed coordinates normalised
+    :param pointSet1: original coordinates
+    :param pointSet2: transformed coordinates
+
+    :return: homographies computed using opencv functions
+    """
+    norm_H, norm_status_H = cv2.findHomography(pointSet1norm,
+                                               pointSet2norm)
+    denorm_H, denorm_status_H = cv2.findHomography(pointSet1,
+                                                   pointSet2)
+    return norm_H, denorm_H
+
+
+def errorComputation(manualnormH, manualdenormH, cvnormH, cvdenormH):
+    """
+    :param manualnormH: manually computed normalised H
+    :param manualdenormH: manually computed denormalised H
+    :param cvnormH: opencv computation of normalised H
+    :param cvdenormH: opencv computation of denormalised H
+    :return: relative error % of normalised and denormalised H matrix
+    """
+    normError = ((cvnormH - manualnormH)/cvnormH)*100
+    denormError = ((cvdenormH - manualdenormH)/cvdenormH)*100
+
+    return normError, denormError
+
+
 def main():
     original_coordinates, transformed_coordinates = readData('homography.txt')
     # print(original_coordinates)
@@ -112,9 +142,22 @@ def main():
                                      transformed_coordinates_norm,
                                      norm_original,
                                      norm_transform)
-    print('manualdenormH \n', manualdenormH)
-    print('manualnormH \n', manualnormH)
+    print('manualnormH: \n', manualnormH)
+    print('manualdenormH: \n', manualdenormH)
 
+    cvnormH, cvdenormH = DLTCV(original_coordinates,
+                               transformed_coordinates,
+                               original_coordinates_norm,
+                               transformed_coordinates_norm)
+    print('cvnormH: \n', cvnormH)
+    print('cvdenormH: \n', cvdenormH)
+
+    normalisedError, denormalisedError = errorComputation(manualnormH,
+                                                          manualdenormH,
+                                                          cvnormH,
+                                                          cvdenormH)
+    print('normalised error % is: \n', normalisedError)
+    print('denormalised error % is: \n', denormalisedError)
 
 
 if __name__ == '__main__':
