@@ -129,6 +129,58 @@ def errorComputation(manualnormH, manualdenormH, cvnormH, cvdenormH):
     return normError, denormError
 
 
+def visualizations(inputImg, outputImg, normalisedHCV, denormalisedHCV,
+                   normalisedHManual, denormalisedHManual):
+    """
+    :param inputImg: path to sample input image
+    :param outputImg: path to sample output image
+    :param normalisedHCV: normalised matrix calculated using opencv
+    :param denormalisedHCV: denormalised matrix calculated using opencv
+    :param normalisedHManual: normalised matrix calculated using manual method
+    :param denormalisedHManual: denormalised matrix calculated using manual method
+    :return: None
+    """
+    plt.figure(figsize=(20, 20))
+
+    # input image
+    img_input = cv2.imread(inputImg)
+    plt.subplot(321)
+    plt.title('Input image')
+    plt.imshow(img_input)
+
+    # sample output image
+    img_output = cv2.imread(outputImg)
+    plt.subplot(322)
+    plt.title('Output image')
+    plt.imshow(img_output)
+
+    # opencv normalised warping
+    img_dst_normalised_cv = cv2.warpPerspective(img_input, normalisedHCV, (900, 700))
+    plt.subplot(323)
+    plt.title('Normalised output (openCV)')
+    plt.imshow(img_dst_normalised_cv)
+
+    # opencv denormalised warping
+    img_dst_denormalised_cv = cv2.warpPerspective(img_input, denormalisedHCV, (900, 700))
+    plt.subplot(324)
+    plt.title('Denormalised output (openCV)')
+    plt.imshow(img_dst_denormalised_cv)
+
+    # manual normalised warping
+    img_dst_normalised_manual = cv2.warpPerspective(img_input, normalisedHManual, (900, 700))
+    plt.subplot(325)
+    plt.title('Normalised output (manual)')
+    plt.imshow(img_dst_normalised_manual)
+
+    # manual denormalised warping
+    img_dst_denormalised_manual = cv2.warpPerspective(img_input, denormalisedHManual, (900, 700))
+    plt.subplot(326)
+    plt.title('Denormalised output (opencv)')
+    plt.imshow(img_dst_denormalised_manual)
+
+    plt.show()
+
+
 def main():
     original_coordinates, transformed_coordinates = readData('homography.txt')
     # print(original_coordinates)
@@ -158,6 +210,9 @@ def main():
                                                           cvdenormH)
     print('normalised error % is: \n', normalisedError)
     print('denormalised error % is: \n', denormalisedError)
+
+    visualizations('img1+points.png', 'img2+points.png',
+                   cvnormH, cvdenormH, manualnormH, manualdenormH)
 
 
 if __name__ == '__main__':
