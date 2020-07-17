@@ -178,7 +178,7 @@ def visualizations(inputImg, outputImg, normalisedHCV, denormalisedHCV,
     plt.title('Denormalised output (opencv)')
     plt.imshow(img_dst_denormalised_manual)
 
-    plt.show()
+    plt.savefig('visualization.pdf')
 
 
 def main():
