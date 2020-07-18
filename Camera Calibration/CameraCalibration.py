@@ -6,6 +6,7 @@ import glob
 
 np.set_printoptions(suppress=True)
 
+# attempt to calculate the camera matrix for a smartphone camera
 
 def calibration():
     # Defining the dimensions of checkerboard
